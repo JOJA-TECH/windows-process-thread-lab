@@ -1,0 +1,15 @@
+field,value,notes
+timestamp,YYYY-MM-DD HH:MM:SS,se genera al ejecutar
+cpu_name,CPU (se detecta al ejecutar),
+physical_cpus,0,NA si 0
+physical_cores,0,NA si 0
+logical_processors,0,se detecta al ejecutar
+processor_groups,0,se detecta al ejecutar
+arch_process,se detecta al ejecutar,
+arch_system,se detecta al ejecutar,
+os_name,se detecta al ejecutar,
+compiler,se detecta al ejecutar,
+total_memory_bytes,0,NA si 0
+available_memory_bytes,0,NA si 0
+configuration_rationale,se genera al ejecutar,razon de cada configuracion
+limitations,se genera al ejecutar,

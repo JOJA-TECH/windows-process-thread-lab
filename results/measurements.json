@@ -1,0 +1,26 @@
+{
+  "_placeholder": "Plantilla sin datos reales. lab.exe sobrescribe este archivo al ejecutarse.",
+  "timestamp": "YYYY-MM-DD HH:MM:SS",
+  "hardware": {
+    "timestamp": "YYYY-MM-DD HH:MM:SS",
+    "cpu_name": "CPU (se detecta al ejecutar)",
+    "physical_cpus": 0,
+    "physical_cores": 0,
+    "logical_processors": 0,
+    "processor_groups": 0,
+    "arch_process": "se detecta al ejecutar",
+    "arch_system": "se detecta al ejecutar",
+    "os_name": "se detecta al ejecutar",
+    "compiler": "se detecta al ejecutar",
+    "total_memory_bytes": 0,
+    "available_memory_bytes": 0,
+    "core_layout": [],
+    "thread_configs": [],
+    "process_configs": [],
+    "configuration_rationale": "se genera al ejecutar",
+    "limitations": "se genera al ejecutar"
+  },
+  "baseline_wall_ms": 0,
+  "baseline_verification_value": 0,
+  "runs": []
+}

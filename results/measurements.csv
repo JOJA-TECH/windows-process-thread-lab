@@ -1,0 +1,1 @@
+run_id,experiment,mode,workers,logical_processors,physical_cores,iteration_count,repeat,wall_time_ms,process_cpu_time_ms,worker_cpu_time_ms,verification_value,verification_ok,affinity_requested,affinity_applied,peak_memory_bytes,exit_code,win32_error_code,cpu_utilization_percent,notes

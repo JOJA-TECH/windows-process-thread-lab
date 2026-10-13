@@ -1,0 +1,24 @@
+# Observaciones del laboratorio
+
+> Plantilla sin datos reales. `lab.exe` sobrescribe este archivo al ejecutarse y
+> rellena la seccion "Datos medidos automaticamente" con los valores reales.
+
+## Datos medidos automaticamente
+
+- Fecha y hora: NA (se registra al ejecutar)
+- CPU: NA (se detecta al ejecutar)
+- Procesadores logicos: NA
+- Nucleos fisicos: NA
+- Sockets fisicos: NA
+- Linea base (wall): NA
+- Linea base (CPU proceso): NA
+- Resultado de verificacion base: NA
+
+## Datos copiados por el estudiante
+
+- [ ] Pega aqui las capturas/notas del Administrador de tareas y de
+      `scripts/collect_windows_observations.ps1`.
+
+## Observaciones visuales pendientes
+
+- [ ] Ver `evidence/README.md` y tomar las capturas listadas (E01..E09).

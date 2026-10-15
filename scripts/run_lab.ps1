@@ -48,6 +48,8 @@ Write-Host "Archivos esperados en results/:" -ForegroundColor Cyan
     "hardware.csv",
     "measurements.csv",
     "measurements.json",
+    "statistics.csv",
+    "statistics.json",
     "observations.txt",
     "report_draft.md"
 ) | ForEach-Object {

@@ -130,6 +130,7 @@ thread_experiment_run run_affinity_test(const experiment_context& ctx, int repea
   const int workers = 2;
   fill_common(run.result, ctx, workers, repeat, "concurrencia_afinidad", "afinidad");
   run.result.affinity_requested = true;
+  run.result.affinity_mask = 1;
 
   std::vector<uint64_t> partials(static_cast<std::size_t>(workers), 0);
   std::vector<std::atomic<int>> affinity_status(static_cast<std::size_t>(workers));
@@ -188,8 +189,13 @@ thread_experiment_run run_affinity_test(const experiment_context& ctx, int repea
 std::vector<thread_experiment_run> run_hilo_experiments(const experiment_context& ctx) {
   std::vector<thread_experiment_run> runs;
 
-  // 1) linea base secuencial; su valor define la verificacion esperada.
-  runs.push_back(run_sequential(ctx, 1));
+  // 1) linea base secuencial, repetida igual que las demas configuraciones.
+  // La primera repeticion define el valor de verificacion esperado.
+  for (int r = 1; r <= ctx.repetitions; ++r) {
+    if (ctx.cancel_flag && ctx.cancel_flag->load()) return runs;
+    runs.push_back(run_sequential(ctx, r));
+  }
+  if (runs.empty()) return runs;
   const uint64_t expected = runs.front().result.verification_value;
 
   // 2) configuraciones de hilos, repetidas.

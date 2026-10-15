@@ -32,6 +32,7 @@ struct experiment_result {
   std::string notes;
   bool affinity_requested = false;
   bool affinity_applied = false;
+  std::optional<std::uint64_t> affinity_mask;
   std::optional<std::int64_t> peak_memory_bytes;
   std::string experiment_name;
   std::string mode;

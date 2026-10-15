@@ -18,6 +18,10 @@
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
+#include <map>
+#include <numeric>
+#include <cmath>
+#include <limits>
 #include <cstdio>
 #include <cstdint>
 #include <atomic>
@@ -135,7 +139,9 @@ static json::value optional_i64_value(const std::optional<std::int64_t>& v) {
 static json::value optional_double_value(const std::optional<double>& v) {
   return v.has_value() ? json::value::from_double(*v) : json::value::null_value();
 }
-
+static json::value optional_u64_value(const std::optional<std::uint64_t>& v) {
+  return v.has_value() ? json::value::from_int(static_cast<std::int64_t>(*v)) : json::value::null_value();
+}
 static json::object run_to_json(int run_id, const experiment_result& r) {
   json::object o;
   o["run_id"] = json::value::from_int(run_id);
@@ -153,6 +159,7 @@ static json::object run_to_json(int run_id, const experiment_result& r) {
   o["verification_ok"] = json::value::from_bool(r.verification_ok);
   o["affinity_requested"] = json::value::from_bool(r.affinity_requested);
   o["affinity_applied"] = json::value::from_bool(r.affinity_applied);
+  o["affinity_mask"] = optional_u64_value(r.affinity_mask);
   o["peak_memory_bytes"] = optional_i64_value(r.peak_memory_bytes);
   o["exit_code"] = optional_int_value(r.exit_code);
   o["win32_error_code"] = optional_int_value(r.win32_error);
@@ -183,6 +190,118 @@ static bool validate_results(const std::vector<experiment_result>& results,
     ok = false;
   }
   return ok;
+}
+
+struct aggregate_stats {
+  std::string experiment;
+  std::string mode;
+  int workers = 0;
+  std::vector<double> wall_ms;
+};
+
+static double stats_mean(const std::vector<double>& values) {
+  if (values.empty()) return 0.0;
+  return std::accumulate(values.begin(), values.end(), 0.0) /
+         static_cast<double>(values.size());
+}
+
+static double stats_stdev(const std::vector<double>& values) {
+  if (values.size() < 3) return 0.0;
+  const double average = stats_mean(values);
+  double sum = 0.0;
+  for (double value : values) {
+    const double delta = value - average;
+    sum += delta * delta;
+  }
+  return std::sqrt(sum / static_cast<double>(values.size() - 1));
+}
+
+static json::object make_stats_json(const aggregate_stats& group, double baseline_mean) {
+  const double average = stats_mean(group.wall_ms);
+  const double minimum = group.wall_ms.empty()
+      ? 0.0 : *std::min_element(group.wall_ms.begin(), group.wall_ms.end());
+  const double maximum = group.wall_ms.empty()
+      ? 0.0 : *std::max_element(group.wall_ms.begin(), group.wall_ms.end());
+  const double speedup = (baseline_mean > 0.0 && average > 0.0)
+      ? baseline_mean / average : 0.0;
+  json::object out;
+  out["experiment"] = json::value::from_string(group.experiment);
+  out["mode"] = json::value::from_string(group.mode);
+  out["workers"] = json::value::from_int(group.workers);
+  out["sample_count"] = json::value::from_int(static_cast<std::int64_t>(group.wall_ms.size()));
+  out["mean_wall_ms"] = json::value::from_double(average);
+  out["min_wall_ms"] = json::value::from_double(minimum);
+  out["max_wall_ms"] = json::value::from_double(maximum);
+  out["range_wall_ms"] = json::value::from_double(maximum - minimum);
+  out["stdev_wall_ms"] = json::value::from_double(stats_stdev(group.wall_ms));
+  out["speedup_vs_sequential"] = json::value::from_double(speedup);
+  out["efficiency"] = json::value::from_double(group.workers > 0 ? speedup / group.workers : 0.0);
+  out["improvement_percent"] = json::value::from_double(
+      baseline_mean > 0.0 ? ((baseline_mean - average) / baseline_mean) * 100.0 : 0.0);
+  return out;
+}
+
+static std::string stats_number_text(const json::value& value) {
+  std::ostringstream stream;
+  stream << std::fixed << std::setprecision(6) << value.as_double();
+  return stream.str();
+}
+
+static bool write_statistics_files(const std::string& output_dir,
+                                  const std::vector<experiment_result>& results,
+                                  const std::string& timestamp) {
+  std::map<std::string, aggregate_stats> grouped;
+  std::vector<double> baseline_samples;
+  for (const auto& result : results) {
+    if (!result.verification_ok) continue;
+    if (result.experiment_name == "secuencial") {
+      baseline_samples.push_back(static_cast<double>(result.wall_ms));
+    }
+    const std::string key = result.experiment_name + "\n" + result.mode + "\n" +
+                            std::to_string(result.workers);
+    auto& group = grouped[key];
+    group.experiment = result.experiment_name;
+    group.mode = result.mode;
+    group.workers = result.workers;
+    group.wall_ms.push_back(static_cast<double>(result.wall_ms));
+  }
+  const double baseline_mean = stats_mean(baseline_samples);
+
+  const std::string csv_path = path_join(output_dir, "statistics.csv");
+  csv::writer csv_out(csv_path);
+  csv_out.set_header({
+      "experiment", "mode", "workers", "sample_count", "mean_wall_ms",
+      "min_wall_ms", "max_wall_ms", "range_wall_ms", "stdev_wall_ms",
+      "speedup_vs_sequential", "efficiency", "improvement_percent"});
+
+  json::object summary;
+  summary["timestamp"] = json::value::from_string(timestamp);
+  summary["baseline_mean_wall_ms"] = json::value::from_double(baseline_mean);
+  json::array stats_array;
+  for (const auto& entry : grouped) {
+    const auto& group = entry.second;
+    const json::object row_json = make_stats_json(group, baseline_mean);
+    csv::record row;
+    row.fields = {
+        group.experiment,
+        group.mode,
+        std::to_string(group.workers),
+        std::to_string(group.wall_ms.size()),
+        stats_number_text(row_json.at("mean_wall_ms")),
+        stats_number_text(row_json.at("min_wall_ms")),
+        stats_number_text(row_json.at("max_wall_ms")),
+        stats_number_text(row_json.at("range_wall_ms")),
+        stats_number_text(row_json.at("stdev_wall_ms")),
+        stats_number_text(row_json.at("speedup_vs_sequential")),
+        stats_number_text(row_json.at("efficiency")),
+        stats_number_text(row_json.at("improvement_percent"))};
+    csv_out.write_record(std::move(row));
+    stats_array.push_back(json::value::from_object(row_json));
+  }
+  csv_out.finish();
+  summary["groups"] = json::value::from_array(std::move(stats_array));
+  return write_file_text(path_join(output_dir, "statistics.json"),
+                         json::serialize_object(summary) + "\n");
 }
 
 // ----------------------------------------------------------------------------
@@ -323,7 +442,8 @@ int main(int argc, char** argv) {
       "run_id", "experiment", "mode", "workers", "logical_processors", "physical_cores",
       "iteration_count", "repeat", "wall_time_ms", "process_cpu_time_ms", "worker_cpu_time_ms",
       "verification_value", "verification_ok", "affinity_requested", "affinity_applied",
-      "peak_memory_bytes", "exit_code", "win32_error_code", "cpu_utilization_percent", "notes"
+      "affinity_mask", "peak_memory_bytes", "exit_code", "win32_error_code",
+      "cpu_utilization_percent", "notes"
     });
     int run_id = 1;
     for (const auto& r : xctx.results) {
@@ -343,6 +463,7 @@ int main(int argc, char** argv) {
       row.fields.push_back(r.verification_ok ? "TRUE" : "FALSE");
       row.fields.push_back(r.affinity_requested ? "TRUE" : "FALSE");
       row.fields.push_back(r.affinity_applied ? "TRUE" : "FALSE");
+      row.fields.push_back(r.affinity_mask ? std::to_string(*r.affinity_mask) : "NA");
       row.fields.push_back(r.peak_memory_bytes ? std::to_string(*r.peak_memory_bytes) : "NA");
       row.fields.push_back(optional_int(r.exit_code));
       row.fields.push_back(optional_int(r.win32_error));
@@ -355,6 +476,10 @@ int main(int argc, char** argv) {
     csv_out.finish();
   }
   terminal::write_ok(tctx, "CSV: " + csv_path);
+
+  const bool statistics_written = write_statistics_files(output_dir, xctx.results, hw.timestamp);
+  terminal::write_kv(tctx, "Estadisticas agregadas",
+                     statistics_written ? "CSV/JSON escritos" : "no disponibles");
 
   // measurements.json: mismo contenido que el CSV, con tipos correctos.
   {
@@ -418,8 +543,13 @@ int main(int argc, char** argv) {
     } else {
       json_valid = static_cast<bool>(json::parse_object_from_string(tmp));
     }
+    if (!read_file_text(path_join(output_dir, "statistics.csv"), tmp) || tmp.empty() ||
+        !read_file_text(path_join(output_dir, "statistics.json"), tmp) || tmp.empty()) {
+      files_readable = false;
+    }
   }
   const bool results_ok = validate_results(xctx.results, tctx);
+  if (!statistics_written) files_readable = false;
   terminal::write_kv(tctx, "CSV/JSON releibles", files_readable ? "si" : "no");
   terminal::write_kv(tctx, "measurements.json valido", json_valid ? "si" : "no");
 
@@ -427,7 +557,8 @@ int main(int argc, char** argv) {
   terminal::write_kv(tctx, "Linea base (secuencial)", std::to_string(xctx.baseline_wall_ms) + " ms");
   terminal::write_kv(tctx, "CPU proceso (secuencial)", std::to_string(xctx.baseline_cpu_ms) + " ms");
   terminal::write_kv(tctx, "Verificacion base", std::to_string(xctx.baseline_verification));
-  terminal::write_kv(tctx, "Archivos", "hardware.*, measurements.*, observations.txt, report_draft.md");
+  terminal::write_kv(tctx, "Archivos",
+                     "hardware.*, measurements.*, statistics.*, observations.txt, report_draft.md");
   if (opts.quick) {
     terminal::write_info(tctx, "Modo rapido: resultados no validos para el informe final.");
   }

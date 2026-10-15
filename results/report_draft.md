@@ -30,7 +30,7 @@ Limitaciones detectadas: `<limitations>`
 ## Procedimiento
 
 1. Detección de hardware automática y exportación a hardware.json/hardware.csv.
-2. Ejecución secuencial como línea base.
+2. Ejecución secuencial como línea base, repetida el mismo número de veces que las demás configuraciones.
 3. Experimentos con hilos: configuraciones elegidas automáticamente.
 4. Prueba de concurrencia con afinidad si el sistema lo permite.
 5. Prueba de paralelismo con varios procesadores lógicos.
@@ -42,14 +42,14 @@ Limitaciones detectadas: `<limitations>`
 
 ## Configuraciones ejecutadas
 
-| experiment | mode | workers | repeat | wall_ms | cpu_ms | worker_cpu_ms | verify_ok | affinity_ok | notes |
-|------------|------|---------|--------|---------|--------|---------------|-----------|-------------|-------|
+| experiment | mode | workers | repeat | wall_ms | cpu_ms | worker_cpu_ms | verify_ok | affinity_ok | affinity_mask | notes |
+|------------|------|---------|--------|---------|--------|---------------|-----------|-------------|---------------|-------|
 
 ## Resultados
 
 Los datos sugieren que la línea base secuencial tarda `<baseline_wall_ms>` ms de tiempo de pared.
 
-Las mediciones se guardaron en `measurements.csv` y `measurements.json`.
+Las mediciones se guardaron en `measurements.csv` y `measurements.json`; las estadísticas agregadas se guardaron en `statistics.csv` y `statistics.json`.
 
 Cada afirmación de speedup o eficiencia debe verificarse con los datos reales del equipo.
 

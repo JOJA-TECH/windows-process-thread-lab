@@ -134,7 +134,7 @@ El padre crea un archivo de tarea JSON por hijo, lanza todos los hijos, espera c
 4. Ejecuta una prueba de concurrencia con afinidad a un procesador lógico.
 5. Ejecuta pruebas de paralelismo con varios procesadores lógicos.
 6. Ejecuta procesos independientes con `CreateProcessW()` y archivos de tarea/resultado.
-7. Repite cada configuración y calcula estadísticas (media, mínimo, máximo, rango, desviación estándar, mejora %, speedup y eficiencia), escritas en `measurements.csv` y `measurements.json`.
+7. Repite cada configuración, incluida la línea base secuencial, y calcula estadísticas agregadas (media, mínimo, máximo, rango, desviación estándar, mejora %, speedup y eficiencia) en `statistics.csv` y `statistics.json`.
 8. Genera un borrador de informe en `report_draft.md` con la tabla de configuraciones y las estadísticas.
 9. Escribe observaciones en `observations.txt` separando datos medidos, copiados por el estudiante y pendientes.
 
@@ -148,6 +148,7 @@ Los archivos se guardan en el directorio de salida (por defecto `results/`):
 
 - `hardware.json`, `hardware.csv` — caracterización del equipo y razones de configuración.
 - `measurements.csv`, `measurements.json` — una fila por ejecución con todos los campos requeridos.
+- `statistics.csv`, `statistics.json` — estadísticas agregadas por experimento y configuración, calculadas solo con ejecuciones verificadas.
 - `observations.txt` — observaciones medidas/copiadas/pendientes.
 - `report_draft.md` — borrador de informe (incluye enlaces a las gráficas).
 - `charts/*.png` — gráficas generadas por `scripts/make_charts.py`.
@@ -167,6 +168,7 @@ Si una métrica no puede obtenerse sin herramientas administrativas o no está d
 - `worker_cpu_time_ms` de procesos es la suma del CPU reportado por cada hijo (puede subestimar el total).
 - La afinidad solo se marca como aplicada si `SetThreadAffinityMask` tuvo éxito; si falla se guarda el código de error.
 - `cpu_utilization_percent` es CPU del proceso / tiempo de pared; puede superar 100% cuando varios hilos/núcleos trabajan a la vez.
+- `affinity_mask` registra la máscara solicitada en la prueba de afinidad; la implementación actual usa la máscara `1` para el procesador lógico 0.
 
 ## Evidencias
 

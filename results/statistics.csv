@@ -1,0 +1,1 @@
+experiment,mode,workers,sample_count,mean_wall_ms,min_wall_ms,max_wall_ms,range_wall_ms,stdev_wall_ms,speedup_vs_sequential,efficiency,improvement_percent

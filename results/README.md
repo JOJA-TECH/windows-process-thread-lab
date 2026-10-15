@@ -17,6 +17,8 @@ se ejecuta.
 | `hardware.csv` | `lab.exe` (Experimento 1) | El mismo hardware en formato vertical `field,value,notes`. |
 | `measurements.csv` | `lab.exe` (al final) | Una fila por ejecución: tiempos, verificación, afinidad, errores, notas. |
 | `measurements.json` | `lab.exe` (al final) | Los mismos datos con tipos correctos (`int`, `double`, `bool`), no todo texto. |
+| `statistics.csv` | `lab.exe` (al final) | Estadísticas agregadas por experimento y configuración válida. |
+| `statistics.json` | `lab.exe` (al final) | Las mismas estadísticas agregadas con tipos numéricos JSON. |
 | `observations.txt` | `lab.exe` (al final) | Separado en: datos medidos / datos que copia el estudiante / pendientes. |
 | `report_draft.md` | `lab.exe` (al final) | Borrador del informe con tablas, enlaces a las gráficas y hallazgos cautelosos. |
 | `charts/*.png` | `scripts/make_charts.py` | Gráficas construidas a partir de `measurements.csv`. |
@@ -28,7 +30,7 @@ se ejecuta.
 # 1) Compilar
 .\scripts\build.ps1
 
-# 2) Ejecutar (genera hardware.*, measurements.*, observations.txt, report_draft.md)
+# 2) Ejecutar (genera hardware.*, measurements.*, statistics.*, observations.txt, report_draft.md)
 .\scripts\run_lab.ps1
 
 # 3) (Opcional) Regenerar las gráficas a partir del CSV real

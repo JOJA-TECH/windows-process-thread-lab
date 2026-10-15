@@ -1,1 +1,40 @@
 run_id,experiment,mode,workers,logical_processors,physical_cores,iteration_count,repeat,wall_time_ms,process_cpu_time_ms,worker_cpu_time_ms,verification_value,verification_ok,affinity_requested,affinity_applied,affinity_mask,peak_memory_bytes,exit_code,win32_error_code,cpu_utilization_percent,notes
+1,secuencial,secuencial,1,12,6,800000000,1,707,687,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5009408,0,NA,97.17,linea base; verificacion_ok=true
+2,secuencial,secuencial,1,12,6,800000000,2,712,718,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5013504,0,NA,100.84,linea base; verificacion_ok=true
+3,secuencial,secuencial,1,12,6,800000000,3,705,703,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5013504,0,NA,99.72,linea base; verificacion_ok=true
+4,hilos,1_hilos,1,12,6,800000000,1,710,718,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5062656,0,NA,101.13,verificacion_ok
+5,hilos,1_hilos,1,12,6,800000000,2,709,703,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5062656,0,NA,99.15,verificacion_ok
+6,hilos,1_hilos,1,12,6,800000000,3,712,718,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5062656,0,NA,100.84,verificacion_ok
+7,hilos,2_hilos,2,12,6,800000000,1,382,750,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5079040,0,NA,196.34,verificacion_ok
+8,hilos,2_hilos,2,12,6,800000000,2,387,765,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5091328,0,NA,197.67,verificacion_ok
+9,hilos,2_hilos,2,12,6,800000000,3,541,1078,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5091328,0,NA,199.26,verificacion_ok
+10,hilos,4_hilos,4,12,6,800000000,1,280,1031,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5124096,0,NA,368.21,verificacion_ok
+11,hilos,4_hilos,4,12,6,800000000,2,321,1140,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5124096,0,NA,355.14,verificacion_ok
+12,hilos,4_hilos,4,12,6,800000000,3,270,1046,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5124096,0,NA,387.41,verificacion_ok
+13,hilos,8_hilos,8,12,6,800000000,1,159,1046,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5193728,0,NA,657.86,verificacion_ok
+14,hilos,8_hilos,8,12,6,800000000,2,157,1125,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5193728,0,NA,716.56,verificacion_ok
+15,hilos,8_hilos,8,12,6,800000000,3,170,1125,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5193728,0,NA,661.76,verificacion_ok
+16,hilos,12_hilos,12,12,6,800000000,1,119,1281,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5275648,0,NA,1076.47,verificacion_ok
+17,hilos,12_hilos,12,12,6,800000000,2,119,1437,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5283840,0,NA,1207.56,verificacion_ok
+18,hilos,12_hilos,12,12,6,800000000,3,123,1390,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5292032,0,NA,1130.08,verificacion_ok
+19,hilos,13_hilos,13,12,6,800000000,1,136,1375,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5304320,0,NA,1011.03,verificacion_ok
+20,hilos,13_hilos,13,12,6,800000000,2,137,1312,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5304320,0,NA,957.66,verificacion_ok
+21,hilos,13_hilos,13,12,6,800000000,3,133,1390,0,3433144007281013928,TRUE,FALSE,FALSE,NA,5304320,0,NA,1045.11,verificacion_ok
+22,concurrencia_afinidad,afinidad,4,12,6,800000000,1,861,734,0,3433144007281013928,TRUE,TRUE,TRUE,1,5304320,0,NA,85.25,afinidad aplicada a LP 0; concurrencia sin paralelismo fisico
+23,concurrencia_afinidad,afinidad,4,12,6,800000000,2,746,750,0,3433144007281013928,TRUE,TRUE,TRUE,1,5304320,0,NA,100.54,afinidad aplicada a LP 0; concurrencia sin paralelismo fisico
+24,concurrencia_afinidad,afinidad,4,12,6,800000000,3,778,781,0,3433144007281013928,TRUE,TRUE,TRUE,1,5304320,0,NA,100.39,afinidad aplicada a LP 0; concurrencia sin paralelismo fisico
+25,procesos,1_procesos,1,12,6,800000000,1,735,0,718,3433144007281013928,TRUE,FALSE,FALSE,NA,5365760,0,NA,0.00,procesos via archivos de tarea/resultado
+26,procesos,1_procesos,1,12,6,800000000,2,727,0,718,3433144007281013928,TRUE,FALSE,FALSE,NA,5365760,0,NA,0.00,procesos via archivos de tarea/resultado
+27,procesos,1_procesos,1,12,6,800000000,3,731,15,703,3433144007281013928,TRUE,FALSE,FALSE,NA,5365760,0,NA,2.05,procesos via archivos de tarea/resultado
+28,procesos,2_procesos,2,12,6,800000000,1,384,15,718,3433144007281013928,TRUE,FALSE,FALSE,NA,5365760,0,NA,3.91,procesos via archivos de tarea/resultado
+29,procesos,2_procesos,2,12,6,800000000,2,378,0,718,3433144007281013928,TRUE,FALSE,FALSE,NA,5365760,0,NA,0.00,procesos via archivos de tarea/resultado
+30,procesos,2_procesos,2,12,6,800000000,3,392,0,734,3433144007281013928,TRUE,FALSE,FALSE,NA,5365760,0,NA,0.00,procesos via archivos de tarea/resultado
+31,procesos,4_procesos,4,12,6,800000000,1,253,15,810,3433144007281013928,TRUE,FALSE,FALSE,NA,5365760,0,NA,5.93,procesos via archivos de tarea/resultado
+32,procesos,4_procesos,4,12,6,800000000,2,258,31,842,3433144007281013928,TRUE,FALSE,FALSE,NA,5365760,0,NA,12.02,procesos via archivos de tarea/resultado
+33,procesos,4_procesos,4,12,6,800000000,3,226,15,763,3433144007281013928,TRUE,FALSE,FALSE,NA,5365760,0,NA,6.64,procesos via archivos de tarea/resultado
+34,procesos,8_procesos,8,12,6,800000000,1,177,15,982,3433144007281013928,TRUE,FALSE,FALSE,NA,5365760,0,NA,8.47,procesos via archivos de tarea/resultado
+35,procesos,8_procesos,8,12,6,800000000,2,200,46,1153,3433144007281013928,TRUE,FALSE,FALSE,NA,5369856,0,NA,23.00,procesos via archivos de tarea/resultado
+36,procesos,8_procesos,8,12,6,800000000,3,194,0,1151,3433144007281013928,TRUE,FALSE,FALSE,NA,5382144,0,NA,0.00,procesos via archivos de tarea/resultado
+37,procesos,12_procesos,12,12,6,800000000,1,230,46,1198,3433144007281013928,TRUE,FALSE,FALSE,NA,5382144,0,NA,20.00,procesos via archivos de tarea/resultado
+38,procesos,12_procesos,12,12,6,800000000,2,197,46,1213,3433144007281013928,TRUE,FALSE,FALSE,NA,5382144,0,NA,23.35,procesos via archivos de tarea/resultado
+39,procesos,12_procesos,12,12,6,800000000,3,180,46,1292,3433144007281013928,TRUE,FALSE,FALSE,NA,5382144,0,NA,25.56,procesos via archivos de tarea/resultado

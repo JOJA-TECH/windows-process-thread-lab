@@ -1,15 +1,33 @@
 field,value,notes
-timestamp,YYYY-MM-DD HH:MM:SS,se genera al ejecutar
-cpu_name,CPU (se detecta al ejecutar),
-physical_cpus,0,NA si 0
-physical_cores,0,NA si 0
-logical_processors,0,se detecta al ejecutar
-processor_groups,0,se detecta al ejecutar
-arch_process,se detecta al ejecutar,
-arch_system,se detecta al ejecutar,
-os_name,se detecta al ejecutar,
-compiler,se detecta al ejecutar,
-total_memory_bytes,0,NA si 0
-available_memory_bytes,0,NA si 0
-configuration_rationale,se genera al ejecutar,razon de cada configuracion
-limitations,se genera al ejecutar,
+timestamp,2026-10-15 11:10:33,
+cpu_name,AMD Ryzen 5 4600G with Radeon Graphics,
+physical_cpus,1,NA si 0
+physical_cores,6,NA si 0
+logical_processors,12,
+processor_groups,1,
+arch_process,x86_64,
+arch_system,x86_64,
+os_name,"Windows 11 Pro (build 26200, 25H2)",
+compiler,GCC 10.3.0 (MinGW-w64) (C++201703),
+total_memory_bytes,16963178496,NA si 0
+available_memory_bytes,6149500928,NA si 0
+configuration_rationale,"LP = 12 procesadores logicos activos; C = 6 nucleos fisicos detectados (NA si 0); LP limit = 12; proceso limit = 12.
+Hilos: 1, 2, 4, 8, 12, 13.
+  - 1 hilo: linea base de paralelismo, siempre incluida.
+  - 2 hilos: potencia de 2 <= LP (12).
+  - 4 hilos: potencia de 2 <= LP (12).
+  - 8 hilos: potencia de 2 <= LP (12).
+  - 16 hilos: EXCLUIDA por exceder LP=12.
+  - 32 hilos: EXCLUIDA por exceder LP=12.
+  - 12 hilos: LP exacto aunque no sea potencia de 2.
+  - 13 hilos: sobre-suscripcion (LP + 1), LP < 32.
+Procesos: 1, 2, 4, 8, 12.
+  - 1 proceso: linea base, siempre incluida.
+  - 2 procesos: potencia de 2 <= min(LP, 16) (12).
+  - 4 procesos: potencia de 2 <= min(LP, 16) (12).
+  - 8 procesos: potencia de 2 <= min(LP, 16) (12).
+  - 16 procesos: EXCLUIDA por exceder el limite de procesos=12.
+  - 32 procesos: EXCLUIDA por exceder el limite de procesos=12.
+  - 12 procesos: limite exacto min(LP, 16).
+",razon de cada configuracion
+limitations,Limites de ejecucion automatica: max 32 hilos; max 16 procesos; timeout configurable por prueba.,

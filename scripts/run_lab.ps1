@@ -10,6 +10,7 @@ param(
     [switch]$Quick,
     [switch]$SkipProcesses,
     [switch]$SkipAffinity,
+    [switch]$NoTaskManager,
     [int]$TimeoutSeconds = 120
 )
 
@@ -33,6 +34,16 @@ Write-Host "=== Ejecucion del laboratorio ===" -ForegroundColor Cyan
 Write-Host "Ejecutable: $Exe" -ForegroundColor Yellow
 Write-Host "Args: $($argsList -join ' ')" -ForegroundColor Yellow
 Write-Host ""
+
+if (-not $NoTaskManager) {
+    try {
+        Start-Process -FilePath "taskmgr.exe" | Out-Null
+        Write-Host "Administrador de tareas abierto para tomar evidencias." -ForegroundColor Cyan
+        Write-Host "Puedes usar Rendimiento -> CPU y Detalles mientras corre lab.exe." -ForegroundColor DarkCyan
+    } catch {
+        Write-Host "No se pudo abrir el Administrador de tareas: $_" -ForegroundColor Yellow
+    }
+}
 
 $proc = Start-Process -FilePath $Exe -ArgumentList $argsList -NoNewWindow -Wait -PassThru
 if ($proc.ExitCode -ne 0) {

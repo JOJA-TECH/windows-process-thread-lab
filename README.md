@@ -88,6 +88,14 @@ Hay que compilar en Windows; el programa usa APIs Win32 (kernel32 y psapi) y no 
 .\scripts\run_lab.ps1
 ```
 
+El script abre automáticamente el Administrador de tareas antes de iniciar
+`lab.exe`, para facilitar las capturas de Rendimiento → CPU y Detalles durante
+las pruebas. Si no se desea abrirlo, usa:
+
+```powershell
+.\scripts\run_lab.ps1 -NoTaskManager
+```
+
 O directamente:
 
 ```powershell

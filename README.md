@@ -12,6 +12,15 @@ El resultado deja al estudiante únicamente estas tareas manuales:
 
 No se inventan resultados del computador del estudiante. Toda medición que dependa del hardware se genera durante la ejecución en Windows y queda guardada como archivo verificable.
 
+## Documentación para revisión
+
+- **[Arquitectura y guía de revisión](docs/ARCHITECTURE.md):** flujo completo, módulos C++,
+  experimentos, carga, métricas, contratos de salida, scripts, evidencias, limitaciones y
+  checklist para el evaluador.
+- **[Reglas técnicas del proyecto](AGENT.md):** requisitos y criterios de implementación.
+- **[Checklist de evidencias](evidence/README.md):** capturas y observaciones manuales E01–E09.
+- **[Descripción de archivos generados](results/README.md):** contenido y ciclo de vida de cada salida.
+
 ## Requisitos
 
 - Windows 10 u 11 de 64 bits.
@@ -19,7 +28,7 @@ No se inventan resultados del computador del estudiante. Toda medición que depe
 - CMake 3.16 o mayor.
 - Python 3.8+ y `matplotlib` si se desea regenerar las gráficas con `scripts/make_charts.py` (opcional).
 
-## Estructura
+## Estructura resumida
 
 ```text
 windows-process-thread-lab/
@@ -58,9 +67,12 @@ windows-process-thread-lab/
 │   ├── collect_windows_observations.ps1
 │   └── make_charts.py
 ├── results/                    # se llena al ejecutar (incluye .gitkeep y README.md)
-└── evidence/
+└── evidence
     └── README.md
 ```
+
+La explicación funcional de cada archivo y la arquitectura de ejecución están en
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md); esta sección se mantiene como mapa rápido.
 
 ## Compilación en Windows
 
@@ -143,8 +155,9 @@ El padre crea un archivo de tarea JSON por hijo, lanza todos los hijos, espera c
 5. Ejecuta pruebas de paralelismo con varios procesadores lógicos.
 6. Ejecuta procesos independientes con `CreateProcessW()` y archivos de tarea/resultado.
 7. Repite cada configuración, incluida la línea base secuencial, y calcula estadísticas agregadas (media, mínimo, máximo, rango, desviación estándar, mejora %, speedup y eficiencia) en `statistics.csv` y `statistics.json`.
-8. Genera un borrador de informe en `report_draft.md` con la tabla de configuraciones y las estadísticas.
-9. Escribe observaciones en `observations.txt` separando datos medidos, copiados por el estudiante y pendientes.
+8. Genera `mediciones.csv` y `estadisticas.csv` con el formato compacto comparable con el repositorio Linux.
+9. Genera un borrador de informe en `report_draft.md` con la tabla de configuraciones y las estadísticas.
+10. Escribe observaciones en `observations.txt` separando datos medidos, copiados por el estudiante y pendientes.
 
 ### Verificación de la carga
 

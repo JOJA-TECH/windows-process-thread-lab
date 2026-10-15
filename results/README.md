@@ -32,7 +32,7 @@ se ejecuta.
 # 1) Compilar
 .\scripts\build.ps1
 
-# 2) Ejecutar (genera hardware.*, measurements.*, statistics.*, observations.txt, report_draft.md)
+# 2) Ejecutar (genera hardware.*, measurements.*, statistics.*, mediciones.csv, estadisticas.csv, observations.txt, report_draft.md)
 .\scripts\run_lab.ps1
 
 # 3) (Opcional) Regenerar las gráficas a partir del CSV real

@@ -304,6 +304,105 @@ static bool write_statistics_files(const std::string& output_dir,
                          json::serialize_object(summary) + "\n");
 }
 
+struct compatible_measurement_group {
+  std::string mode;
+  int units = 0;
+  std::vector<double> wall_s;
+  std::vector<double> cpu_s;
+  std::vector<double> util_pct;
+};
+
+static std::string compatible_mode(const experiment_result& result) {
+  if (result.experiment_name == "secuencial") return "secuencial";
+  if (result.experiment_name == "hilos") return "hilos_windows";
+  if (result.experiment_name == "procesos") return "procesos_windows";
+  if (result.experiment_name == "concurrencia_afinidad") return "afinidad_1lp";
+  return result.experiment_name;
+}
+
+static std::int64_t compatible_cpu_ms(const experiment_result& result) {
+  // En Linux, procesos_fork usa RUSAGE_CHILDREN. En Windows, el equivalente
+  // disponible en esta medicion es la suma del CPU reportado por los workers.
+  return result.experiment_name == "procesos" ? result.worker_cpu_ms : result.cpu_ms;
+}
+
+static std::string fixed6(double value) {
+  std::ostringstream stream;
+  stream << std::fixed << std::setprecision(6) << value;
+  return stream.str();
+}
+
+static std::string fixed2(double value) {
+  std::ostringstream stream;
+  stream << std::fixed << std::setprecision(2) << value;
+  return stream.str();
+}
+
+static std::string fixed4(double value) {
+  std::ostringstream stream;
+  stream << std::fixed << std::setprecision(4) << value;
+  return stream.str();
+}
+
+static bool write_linux_compatible_outputs(const std::string& output_dir,
+                                           const std::vector<experiment_result>& results) {
+  const std::string measurements_path = path_join(output_dir, "mediciones.csv");
+  csv::writer measurements(measurements_path);
+  measurements.set_header({"rep", "mode", "units", "logical_cpus", "total_iters",
+                           "wall_s", "cpu_s", "util_pct", "checksum"});
+  std::map<std::string, compatible_measurement_group> groups;
+  for (const auto& result : results) {
+    if (!result.verification_ok) continue;
+    const std::string mode = compatible_mode(result);
+    const std::int64_t cpu_ms = compatible_cpu_ms(result);
+    const double wall_s = static_cast<double>(result.wall_ms) / 1000.0;
+    const double cpu_s = static_cast<double>(cpu_ms) / 1000.0;
+    const double util_pct = wall_s > 0.0 ? (cpu_s / wall_s) * 100.0 : 0.0;
+    csv::record row;
+    row.fields = {std::to_string(result.repeat), mode, std::to_string(result.workers),
+                  std::to_string(result.logical_processors),
+                  std::to_string(result.iteration_count), fixed6(wall_s), fixed6(cpu_s),
+                  fixed2(util_pct), std::to_string(result.verification_value)};
+    measurements.write_record(std::move(row));
+
+    const std::string key = mode + "\n" + std::to_string(result.workers);
+    auto& group = groups[key];
+    group.mode = mode;
+    group.units = result.workers;
+    group.wall_s.push_back(wall_s);
+    group.cpu_s.push_back(cpu_s);
+    group.util_pct.push_back(util_pct);
+  }
+  measurements.finish();
+
+  double baseline_mean = 0.0;
+  auto baseline_it = groups.find("secuencial\n1");
+  if (baseline_it != groups.end()) baseline_mean = stats_mean(baseline_it->second.wall_s);
+
+  const std::string statistics_path = path_join(output_dir, "estadisticas.csv");
+  csv::writer statistics(statistics_path);
+  statistics.set_header({"mode", "units", "n", "mean_s", "min_s", "max_s", "range_s",
+                         "stdev_s", "mean_cpu_s", "mean_util_pct", "speedup",
+                         "efficiency_pct"});
+  for (const auto& entry : groups) {
+    const auto& group = entry.second;
+    const double average = stats_mean(group.wall_s);
+    const double minimum = *std::min_element(group.wall_s.begin(), group.wall_s.end());
+    const double maximum = *std::max_element(group.wall_s.begin(), group.wall_s.end());
+    const double speedup = (baseline_mean > 0.0 && average > 0.0)
+        ? baseline_mean / average : 0.0;
+    csv::record row;
+    row.fields = {group.mode, std::to_string(group.units), std::to_string(group.wall_s.size()),
+                  fixed4(average), fixed4(minimum), fixed4(maximum), fixed4(maximum - minimum),
+                  fixed4(stats_stdev(group.wall_s)), fixed4(stats_mean(group.cpu_s)),
+                  fixed2(stats_mean(group.util_pct)), fixed4(speedup),
+                  fixed2(group.units > 0 ? speedup / group.units * 100.0 : 0.0)};
+    statistics.write_record(std::move(row));
+  }
+  statistics.finish();
+  return true;
+}
+
 // ----------------------------------------------------------------------------
 // main
 // ----------------------------------------------------------------------------
@@ -480,6 +579,11 @@ int main(int argc, char** argv) {
   const bool statistics_written = write_statistics_files(output_dir, xctx.results, hw.timestamp);
   terminal::write_kv(tctx, "Estadisticas agregadas",
                      statistics_written ? "CSV/JSON escritos" : "no disponibles");
+  const bool compatible_outputs_written =
+      write_linux_compatible_outputs(output_dir, xctx.results);
+  terminal::write_kv(tctx, "Formato compatible Linux",
+                     compatible_outputs_written ? "mediciones.csv/estadisticas.csv escritos"
+                                                 : "no disponibles");
 
   // measurements.json: mismo contenido que el CSV, con tipos correctos.
   {
@@ -547,9 +651,13 @@ int main(int argc, char** argv) {
         !read_file_text(path_join(output_dir, "statistics.json"), tmp) || tmp.empty()) {
       files_readable = false;
     }
+    if (!read_file_text(path_join(output_dir, "mediciones.csv"), tmp) || tmp.empty() ||
+        !read_file_text(path_join(output_dir, "estadisticas.csv"), tmp) || tmp.empty()) {
+      files_readable = false;
+    }
   }
   const bool results_ok = validate_results(xctx.results, tctx);
-  if (!statistics_written) files_readable = false;
+  if (!statistics_written || !compatible_outputs_written) files_readable = false;
   terminal::write_kv(tctx, "CSV/JSON releibles", files_readable ? "si" : "no");
   terminal::write_kv(tctx, "measurements.json valido", json_valid ? "si" : "no");
 
@@ -558,7 +666,8 @@ int main(int argc, char** argv) {
   terminal::write_kv(tctx, "CPU proceso (secuencial)", std::to_string(xctx.baseline_cpu_ms) + " ms");
   terminal::write_kv(tctx, "Verificacion base", std::to_string(xctx.baseline_verification));
   terminal::write_kv(tctx, "Archivos",
-                     "hardware.*, measurements.*, statistics.*, observations.txt, report_draft.md");
+                     "hardware.*, measurements.*, statistics.*, mediciones.csv, estadisticas.csv, "
+                     "observations.txt, report_draft.md");
   if (opts.quick) {
     terminal::write_info(tctx, "Modo rapido: resultados no validos para el informe final.");
   }

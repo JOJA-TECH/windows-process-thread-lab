@@ -113,7 +113,8 @@ report_blocks build_report_draft(const experiment_context& ctx, std::string meas
        << "5. Prueba de paralelismo con varios procesadores logicos.\n"
        << "6. Experimento de procesos (CreateProcessW + archivos de tarea/resultado).\n"
        << "7. Repeticiones por configuracion: " << ctx.repetitions << ".\n"
-       << "8. Exportacion a measurements.csv, measurements.json, statistics.csv y statistics.json.\n"
+       << "8. Exportacion a measurements.csv/measurements.json, statistics.csv/statistics.json y "
+          "mediciones.csv/estadisticas.csv (formato comparable con Linux).\n"
        << "9. Graficas generadas a partir de los datos reales (scripts/make_charts.py).\n"
        << "10. Borrador de informe con hallazgos automaticos cautelosos.\n";
   rb.procedure = proc.str();
@@ -165,7 +166,8 @@ report_blocks build_report_draft(const experiment_context& ctx, std::string meas
       << "Estadisticas por numero de hilos (speedup = linea base / media; eficiencia = speedup / hilos):\n\n"
       << stats.str() << "\n"
       << "Las mediciones completas estan en `" << measurements_csv << "` y `" << measurements_json
-      << "`; las estadisticas agregadas se escriben en `statistics.csv` y `statistics.json`.\n";
+      << "`; las estadisticas agregadas se escriben en `statistics.csv` y `statistics.json`; "
+         "el formato compacto comparable con Linux queda en `mediciones.csv` y `estadisticas.csv`.\n";
   rb.results = res.str();
 
   // Graficas: se enlazan los archivos que produce make_charts.py.

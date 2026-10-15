@@ -117,7 +117,7 @@ thread_experiment_run run_thread_config(const experiment_context& ctx, int worke
 // ----------------------------------------------------------------------------
 // Concurrencia con afinidad a un procesador logico
 // ----------------------------------------------------------------------------
-// Se crean varios hilos y se intenta restringir cada uno al procesador logico 0.
+// Se crean cuatro hilos y se intenta restringir cada uno al procesador logico 0.
 // Si la afinidad se aplica, los hilos comparten un unico procesador logico: hay
 // concurrencia (avance intercalado) pero no paralelismo fisico simultaneo. Si
 // SetThreadAffinityMask falla, se guarda el codigo de error de Windows y NO se
@@ -127,7 +127,7 @@ thread_experiment_run run_thread_config(const experiment_context& ctx, int worke
 thread_experiment_run run_affinity_test(const experiment_context& ctx, int repeat,
                                         uint64_t expected_verification) {
   thread_experiment_run run;
-  const int workers = 2;
+  const int workers = 4;
   fill_common(run.result, ctx, workers, repeat, "concurrencia_afinidad", "afinidad");
   run.result.affinity_requested = true;
   run.result.affinity_mask = 1;

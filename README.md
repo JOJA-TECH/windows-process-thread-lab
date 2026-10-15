@@ -157,6 +157,7 @@ Los archivos se guardan en el directorio de salida (por defecto `results/`):
 - `hardware.json`, `hardware.csv` — caracterización del equipo y razones de configuración.
 - `measurements.csv`, `measurements.json` — una fila por ejecución con todos los campos requeridos.
 - `statistics.csv`, `statistics.json` — estadísticas agregadas por experimento y configuración, calculadas solo con ejecuciones verificadas.
+- `mediciones.csv`, `estadisticas.csv` — salidas compactas compatibles con el repositorio Linux, con los campos `rep`, `mode`, `units`, `logical_cpus`, `total_iters`, `wall_s`, `cpu_s`, `util_pct` y `checksum`.
 - `observations.txt` — observaciones medidas/copiadas/pendientes.
 - `report_draft.md` — borrador de informe (incluye enlaces a las gráficas).
 - `charts/*.png` — gráficas generadas por `scripts/make_charts.py`.
@@ -174,9 +175,11 @@ python scripts/make_charts.py --csv results/measurements.csv --out results/chart
 Si una métrica no puede obtenerse sin herramientas administrativas o no está disponible, se registra como `NA` y se explica la limitación. No se rellena con valores inventados.
 
 - `worker_cpu_time_ms` de procesos es la suma del CPU reportado por cada hijo (puede subestimar el total).
+- En `mediciones.csv`, `cpu_s` usa el CPU del proceso para secuencial/hilos y la suma `worker_cpu_time_ms` para procesos, equivalente a `RUSAGE_CHILDREN` del experimento Linux.
 - La afinidad solo se marca como aplicada si `SetThreadAffinityMask` tuvo éxito; si falla se guarda el código de error.
 - `cpu_utilization_percent` es CPU del proceso / tiempo de pared; puede superar 100% cuando varios hilos/núcleos trabajan a la vez.
 - `affinity_mask` registra la máscara solicitada en la prueba de afinidad; la implementación actual usa la máscara `1` para el procesador lógico 0.
+- La prueba de afinidad usa 4 hilos en el procesador lógico 0, para mantener la misma configuración experimental documentada en Linux.
 
 ## Evidencias
 

@@ -49,7 +49,7 @@ Limitaciones detectadas: `<limitations>`
 
 Los datos sugieren que la línea base secuencial tarda `<baseline_wall_ms>` ms de tiempo de pared.
 
-Las mediciones se guardaron en `measurements.csv` y `measurements.json`; las estadísticas agregadas se guardaron en `statistics.csv` y `statistics.json`.
+Las mediciones se guardaron en `measurements.csv` y `measurements.json`; las estadísticas agregadas se guardaron en `statistics.csv` y `statistics.json`. Para comparar directamente con Linux también se generan `mediciones.csv` y `estadisticas.csv`.
 
 Cada afirmación de speedup o eficiencia debe verificarse con los datos reales del equipo.
 

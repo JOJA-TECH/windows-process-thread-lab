@@ -19,6 +19,8 @@ se ejecuta.
 | `measurements.json` | `lab.exe` (al final) | Los mismos datos con tipos correctos (`int`, `double`, `bool`), no todo texto. |
 | `statistics.csv` | `lab.exe` (al final) | Estadísticas agregadas por experimento y configuración válida. |
 | `statistics.json` | `lab.exe` (al final) | Las mismas estadísticas agregadas con tipos numéricos JSON. |
+| `mediciones.csv` | `lab.exe` (al final) | Formato comparable con Linux: `rep,mode,units,logical_cpus,total_iters,wall_s,cpu_s,util_pct,checksum`. |
+| `estadisticas.csv` | `lab.exe` (al final) | Formato comparable con Linux: medias, rango, desviación, CPU, speedup y eficiencia. |
 | `observations.txt` | `lab.exe` (al final) | Separado en: datos medidos / datos que copia el estudiante / pendientes. |
 | `report_draft.md` | `lab.exe` (al final) | Borrador del informe con tablas, enlaces a las gráficas y hallazgos cautelosos. |
 | `charts/*.png` | `scripts/make_charts.py` | Gráficas construidas a partir de `measurements.csv`. |

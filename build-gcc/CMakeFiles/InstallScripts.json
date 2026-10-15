@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/dev/windows-process-thread-lab/build-gcc/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

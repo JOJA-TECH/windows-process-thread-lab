@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\lab.dir/objects.a
+C:\TDM-GCC-64\bin\ar.exe qc CMakeFiles\lab.dir/objects.a @CMakeFiles\lab.dir\objects1.rsp
+C:\TDM-GCC-64\bin\g++.exe -O3 -DNDEBUG -Wl,--whole-archive CMakeFiles\lab.dir/objects.a -Wl,--no-whole-archive -o lab.exe -Wl,--out-implib,liblab.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\lab.dir\linkLibs.rsp

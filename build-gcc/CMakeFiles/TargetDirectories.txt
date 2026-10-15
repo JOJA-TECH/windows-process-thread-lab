@@ -1,0 +1,7 @@
+C:/dev/windows-process-thread-lab/build-gcc/CMakeFiles/lab.dir
+C:/dev/windows-process-thread-lab/build-gcc/CMakeFiles/edit_cache.dir
+C:/dev/windows-process-thread-lab/build-gcc/CMakeFiles/rebuild_cache.dir
+C:/dev/windows-process-thread-lab/build-gcc/CMakeFiles/list_install_components.dir
+C:/dev/windows-process-thread-lab/build-gcc/CMakeFiles/install.dir
+C:/dev/windows-process-thread-lab/build-gcc/CMakeFiles/install/local.dir
+C:/dev/windows-process-thread-lab/build-gcc/CMakeFiles/install/strip.dir
